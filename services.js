@@ -9,8 +9,6 @@ dotenv.config();
 
 const key_ai = process.env.KEY_AI;
 
-
- 
 const sanitizeDOM = (html) => {
     const window = new JSDOM('').window;
     const purify = DOMPurify(window);
@@ -41,7 +39,7 @@ export const getAIAnswer = async (modelAI, textLong, articleText) => {
         const chatCompletion = await openai.chat.completions.create({
             model: modelAI,
             messages: [
-                { role: "system", content: `Summarize the following article in ${textLong} sentence(s).` },
+                { role: "system", content: `Summarize the following article in ${textLong} sentences.` },
                 { role: "user", content: `Text: ${articleText}` }
             ],
             temperature: 0.5,
@@ -52,6 +50,6 @@ export const getAIAnswer = async (modelAI, textLong, articleText) => {
         return chatCompletion.choices[0].message.content;
     } catch (e) {
         console.error(`Error! AI answer: ${e.message}`);
-        throw new Error(`Error. AI answer: ${e.message}`);
+        throw Error(e.message)
     }
 }

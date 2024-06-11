@@ -10,7 +10,7 @@
     <input type="url" id="url" value="">
 
     <label for="textLong">Do ilu zdań skrócić?</label>
-    <input type="number" id="textLong" value="">
+    <input type="number" id="textLong" defaultValue="4" value="4">
 
     <label for="chatGPT">Podaj wersję openAI</label>
     <select type="" id="chatGPT">
@@ -19,10 +19,68 @@
         <option value="chatGPT-4o">chatGPT-4o</option>
     </select>
 
+    <div>
+        <button id="send">
+            Send
+        </button>
+    </div>
+
+    <div id="summarize"></div>
+
+
 <script>
     const url = document.getElementById('url');
     const sentences = document.getElementById('textLong');
-    const chatGPT = getElementById('chatGPT');
+    const chatGPT = document.getElementById('chatGPT');
+    const send = document.getElementById('send');
+    const summarize = document.getElementById('summarize')
+
+    url.addEventListener('onchange', (e) => {
+        url.value = e.target.value;
+    });
+
+    sentences.addEventListener('onchange', (e) => {
+        sentences.value = e.target.value;
+    });
+
+    chatGPT.addEventListener('onchange', (e) => {
+        chatGPT.value = e.target.value;
+    })
+
+    send.addEventListener('click', () => {
+        if(validationData(url.value, sentences.value)) {
+            fetch('http://localhost:5555/summarize', {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    url: url.value,
+                    textLong: sentences.value, 
+                    modelAI: chatGPT.value
+                })
+            }).then(response => response.json())
+            .then(data => {
+                summarize.innerText(data);
+            })
+            .catch(e => console.error(e))
+        }
+    })
+
+
+    function validationData(url, sentence) {
+        const urlPattern = /(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/g;
+        if(sentence < 1 && sentence === NaN) {
+            return { message: 'number of sentences is invalid', valid: false }
+        }
+
+        if(!url && urlPattern.test(url)) {
+            return { message: 'url is invalid', valid: false }
+        }
+
+        return {valid: true}
+    }
 
 </script>
 </body>
