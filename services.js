@@ -8,6 +8,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const key_ai = process.env.KEY_AI;
+const key = process.env.MY_SECRET_KEY;
 
 const sanitizeDOM = (html) => {
     const window = new JSDOM('').window;

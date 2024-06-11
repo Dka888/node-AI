@@ -9,7 +9,7 @@ export const summarizeText = async (req, res) => {
     const cachedData = cache.get(cacheKey);
 
     if (cachedData) {
-        return res.sendStatus(200).send(cachedData)
+        return res.status(200).json(cachedData)
     }
 
     try {
@@ -19,8 +19,9 @@ export const summarizeText = async (req, res) => {
         
         cache.set(cacheKey, responseLLM);
 
-        res.json(responseLLM);
+        res.status(200).json(responseLLM);
     } catch(e) {
+        res.json(e.message)
         throw new Error(e);
     }
 }

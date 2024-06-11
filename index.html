@@ -10,7 +10,7 @@
     <input type="url" id="url" value="">
 
     <label for="textLong">Do ilu zdań skrócić?</label>
-    <input type="number" id="textLong" defaultValue="4" value="4">
+    <input type="number" id="textLong" defaultValue="4" value="4" min="1" max="15">
 
     <label for="chatGPT">Podaj wersję openAI</label>
     <select type="" id="chatGPT">
@@ -33,7 +33,6 @@
     const sentences = document.getElementById('textLong');
     const chatGPT = document.getElementById('chatGPT');
     const send = document.getElementById('send');
-    const summarize = document.getElementById('summarize')
 
     url.addEventListener('onchange', (e) => {
         url.value = e.target.value;
@@ -48,7 +47,10 @@
     })
 
     send.addEventListener('click', () => {
-        if(validationData(url.value, sentences.value)) {
+
+        const valid = validationData(url.value, sentences.value)
+        if(valid.valid) {
+            document.getElementById("summarize").innerHTML = 'loading...'
             fetch('http://localhost:5555/summarize', {
                 method: 'POST',
                 mode: 'cors',
@@ -60,11 +62,17 @@
                     textLong: sentences.value, 
                     modelAI: chatGPT.value
                 })
-            }).then(response => response.json())
-            .then(data => {
-                summarize.innerText(data);
             })
-            .catch(e => console.error(e))
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("summarize").innerHTML = data;
+                })
+            .catch(e => {
+                console.log(e);
+                document.getElementById("summarize").innerHTML = e.message;
+            })
+        } else {
+            document.getElementById("summarize").innerHTML = valid.message;
         }
     })
 
@@ -75,7 +83,7 @@
             return { message: 'number of sentences is invalid', valid: false }
         }
 
-        if(!url && urlPattern.test(url)) {
+        if(!url || !urlPattern.test(url)) {
             return { message: 'url is invalid', valid: false }
         }
 
