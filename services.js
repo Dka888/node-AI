@@ -26,7 +26,8 @@ export const getArticle = async (url) => {
 
         return article.textContent;
     } catch (e) {
-        throw new Error();
+        console.error(e);
+        throw new Error(e);
     }
 }
 
@@ -47,9 +48,10 @@ export const getAIAnswer = async (modelAI, textLong, articleText) => {
             max_tokens: 50,
         });
 
+
         return chatCompletion.choices[0].message.content;
     } catch (e) {
-        console.error(`Error fetching AI answer: ${e.message}`);
-        throw new Error(`Error fetching AI answer: ${e.message}`);
+        console.error(`Error! AI answer: ${e.message}`);
+        throw new Error(`Error. AI answer: ${e.message}`);
     }
 }

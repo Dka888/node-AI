@@ -4,6 +4,6 @@ import { identifyData } from "./middleware.js";
 
 const router = Router();
 
-router.post('/summarize', identifyData, summarizeText)
+router.post('/', identifyData, summarizeText)
 
 export default router;
